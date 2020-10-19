@@ -1,65 +1,93 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
-export default function Home() {
+import Button from 'components/Button/Button'
+import GitHub from 'components/Icons/GitHub'
+import InlineSpinner from 'components/Spinners/InlineSpinner'
+import { useUser, USER_STATES } from 'hooks/useUser'
+import { SIGN_IN_WITH_GITHUB } from 'firebase/client'
+
+const Index = () => {
+  const router = useRouter()
+  const user = useUser()
+
+  const handleClick = () => SIGN_IN_WITH_GITHUB()
+
+  useEffect(() => {
+    user && router.replace('/home')
+  }, [user])
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
-        <title>Create Next App</title>
+        <title>Sign In</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <section>
+        <img src="/devter-logo.svg" alt="Logo" />
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        <h1>devter</h1>
+        <h3>
+          <small>Develop for developers</small>
+        </h3>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+        {user === USER_STATES.NOT_LOGGED && (
+          <Button onClick={handleClick}>
+            <GitHub />
+            <small>Sign In with Github</small>
+          </Button>
+        )}
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+        {user === USER_STATES.NOT_KNOWN && <InlineSpinner />}
+      </section>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+      <style jsx>{`
+        section {
+          height: 100%;
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
+          display: grid;
+          grid-template-columns: 1fr;
+          grid-template-rows: 30% repeat(3, min-content);
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+          place-content: center;
+          place-items: center;
+        }
+
+        h1 {
+          margin: 0.5rem 0;
+
+          font-weight: 800;
+
+          background: linear-gradient(
+            90deg,
+            rgba(67, 97, 238, 1) 0%,
+            rgba(63, 55, 201, 1) 100%
+          );
+
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        h3 {
+          color: var(--colors-secondary);
+
+          margin: 0;
+        }
+
+        h3 + :global(button) {
+          margin-top: 1em;
+        }
+
+        @media (min-height: 900px) {
+          section {
+            grid-template-rows: 20rem repeat(3, min-content);
+          }
+        }
+      `}</style>
+    </>
   )
 }
+
+export default Index
